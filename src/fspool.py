@@ -14,15 +14,16 @@ class FSPool(nn.Module):
 
     def __init__(self, in_channels, n_pieces, relaxed=False):
         """
-        in_channels: Number of channels in input
-        n_pieces: Number of pieces in piecewise linear
-        relaxed: Use sorting networks relaxation instead of traditional sorting
+        in_channels: Number of channels in input / En nuestro caso es de 64 para el mnist, ya que es el tamaño de nuestro embeding
+        n_pieces: Number of pieces in piecewise linear /Es arbitrario y se corresponde a la matriz de pesos
+        relaxed: Use sorting networks relaxation instead of traditional sorting / Para ordenar usando una red neuronal o no
         """
         super().__init__()
         self.n_pieces = n_pieces
-        self.weight = nn.Parameter(torch.zeros(in_channels, n_pieces + 1))
+        #Creación de una matriz de pesos con tamaño 64x21
+        self.weight = nn.Parameter(torch.zeros(in_channels, n_pieces + 1)) 
         self.relaxed = relaxed
-
+        #Llamamos a la función para inicializar los pesos de weight
         self.reset_parameters()
 
     def reset_parameters(self):
@@ -45,6 +46,8 @@ class FSPool(nn.Module):
         ), "incorrect number of input channels in weight"
         # can call withtout length tensor, uses same length for all sets in the batch
         if n is None:
+            #Se crea un tensor con el tamaño del batch_size y se rellena con el tamaño de los conjuntos
+            #en nuestro caso será de 342 si usamos mnist
             n = x.new(x.size(0)).fill_(x.size(2)).long()
         # create tensor of ratios $r$
         sizes, mask = fill_sizes(n, x)
@@ -119,12 +122,14 @@ def fill_sizes(sizes, x=None):
         is less than x.size(), which can be a case if there is at least one padding element in each set in the batch.
     """
     if x is not None:
+        #guardamos el tamaño máximo de los sets
         max_size = x.size(2)
     else:
         max_size = sizes.max()
     size_tensor = sizes.new(sizes.size(0), max_size).float().fill_(-1)
-
+    #Creamos un tensor que va desde 1 a 342
     size_tensor = torch.arange(end=max_size, device=sizes.device, dtype=torch.float32)
+    #Operación sobre el tensor para obtener los ratios
     size_tensor = size_tensor.unsqueeze(0) / (sizes.float() - 1).clamp(min=1).unsqueeze(
         1
     )
