@@ -25,7 +25,7 @@ class FSPool(nn.Module):
         self.relaxed = relaxed
         #Llamamos a la función para inicializar los pesos de weight
         self.reset_parameters()
-
+        self.ahmed = 0
     def reset_parameters(self):
         nn.init.normal_(self.weight)
 
@@ -55,7 +55,7 @@ class FSPool(nn.Module):
 
         # turn continuous into concrete weights
         weight = self.determine_weight(sizes)
-
+        self.ahmed = weight
         # make sure that fill value isn't affecting sort result
         # sort is descending, so put unreasonably low value in places to be masked away
         x = x + (1 - mask).float() * -99999

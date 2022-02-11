@@ -62,7 +62,7 @@ class FSEncoderClasification(nn.Module):
             nn.ReLU(),
             nn.Linear(output_channels, 10),
         )
-        self.pool = FSPool(dim, 20, relaxed=False)
+        self.pool = FSPool(dim, 20, relaxed=True)
 
     def forward(self, x, mask=None):
         x = self.conv(x)
