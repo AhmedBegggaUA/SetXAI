@@ -72,7 +72,7 @@ class FSEncoderClasification(nn.Module):
         return x
 
 class SumEncoder(nn.Module):
-    def __init__(self, *, input_channels, output_channels, dim, **kwargs):
+    def __init__(self, input_channels, output_channels, dim, **kwargs):
         super().__init__()
         self.conv = nn.Sequential(
             nn.Conv1d(input_channels, dim, 1),
@@ -94,10 +94,11 @@ class SumEncoder(nn.Module):
         x = self.conv(x)
         x = x.sum(2)
         x = self.lin(x)
+        x = self.classifier(x)
         return x
 
 class MaxEncoder(nn.Module):
-    def __init__(self, *, input_channels, output_channels, dim, **kwargs):
+    def __init__(self, input_channels, output_channels, dim, **kwargs):
         super().__init__()
         self.conv = nn.Sequential(
             nn.Conv1d(input_channels, dim, 1),
@@ -119,6 +120,7 @@ class MaxEncoder(nn.Module):
         x = self.conv(x)
         x = x.max(2)[0]
         x = self.lin(x)
+        x = self.classifier(x)
         return x
 
 class MeanEncoder(nn.Module):
@@ -144,4 +146,5 @@ class MeanEncoder(nn.Module):
         x = self.conv(x)
         x = x.sum(2) / n_points.unsqueeze(1).float()
         x = self.lin(x)
+        x = self.classifier(x)
         return x
