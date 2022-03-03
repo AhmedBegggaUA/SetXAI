@@ -124,7 +124,7 @@ class MaxEncoder(nn.Module):
         return x
 
 class MeanEncoder(nn.Module):
-    def __init__(self, *, input_channels, output_channels, dim, **kwargs):
+    def __init__(self, input_channels, output_channels, dim, **kwargs):
         super().__init__()
         self.conv = nn.Sequential(
             nn.Conv1d(input_channels, dim, 1),
@@ -144,7 +144,7 @@ class MeanEncoder(nn.Module):
 
     def forward(self, x, n_points, *args):
         x = self.conv(x)
-        x = x.sum(2) / n_points.unsqueeze(1).float()
+        x = x.sum(2) / n_points.size(1)
         x = self.lin(x)
         x = self.classifier(x)
         return x
