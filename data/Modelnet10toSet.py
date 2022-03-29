@@ -1,7 +1,11 @@
-import os
+import os.path as osp
+import ssl
+import sys
+import urllib
 import numpy as np
 import itertools
 import math, random
+import os
 random.seed = 42
 
 import torch
@@ -9,15 +13,14 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms, utils
-from model import MaxEncoder
-import numpy as np
+from src.model import MaxEncoder
 import h5py
 from torch.utils.data import DataLoader, Dataset, TensorDataset
 from time import sleep
 from tqdm import tqdm
 from path import Path
-from pointcloud_utils import pcshow , visualize_rotate, read_off
-
+from data.pointcloud_utils import pcshow , visualize_rotate, read_off
+import sys
 class PointSampler(object):
     def __init__(self, output_size):
         assert isinstance(output_size, int)
@@ -98,15 +101,20 @@ def default_transforms():
     return transforms.Compose([
                                 PointSampler(2048),
                                 Normalize(),
+                                RandRotation_z(),
+                                RandomNoise(),
                                 ToTensor()
                               ])
 class PointCloudData(Dataset):
-    def __init__(self, root_dir, valid=False, folder="train", transform=default_transforms()):
+    def __init__(self, root_dir=None, Train=True, folder="train", transform=default_transforms()):
+        if root_dir == None:
+            root_dir = Path("../data/10/raw")
+        #print(sys.path)
         self.root_dir = root_dir
         folders = [dir for dir in sorted(os.listdir(root_dir)) if os.path.isdir(root_dir/dir)]
         self.classes = {folder: i for i, folder in enumerate(folders)}
-        self.transforms = transform if not valid else default_transforms()
-        self.valid = valid
+        self.transforms = transform if  Train else default_transforms()
+        self.valid = Train
         self.files = []
         for category in self.classes.keys():
             new_dir = root_dir/Path(category)/folder
@@ -131,5 +139,5 @@ class PointCloudData(Dataset):
         category = self.files[idx]['category']
         with open(pcd_path, 'r') as f:
             pointcloud = self.__preproc__(f)
-        return {'pointcloud': pointcloud, 
-                'category': self.classes[category]}
+        mask = torch.ones(32,2048)
+        return self.classes[category],pointcloud.transpose(0,1),mask 

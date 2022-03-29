@@ -6,6 +6,7 @@ import torch.utils.data
 import torchvision.transforms as transforms
 import torchvision.transforms.functional as T
 from torch.utils.data import DataLoader
+import matplotlib.pyplot as plt
 
 
 """

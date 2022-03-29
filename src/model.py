@@ -1,11 +1,14 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from fspool import FSPool
+from src.fspool import FSPool
 ############
 # Encoders #
 ############
-class FSEncoder(nn.Module):
+"""
+    Clase FSEncoder, con la operacion invariante de fspool (Feature wise sort pool)
+"""
+class FSEncoderDSPN(nn.Module):
     def __init__(self, input_channels, output_channels, dim):
         super().__init__()
         for m in self.modules():
@@ -34,8 +37,11 @@ class FSEncoder(nn.Module):
         x = x / x.size(2)  # normalise so that activations aren't too high with big sets
         x, _ = self.pool(x)
         return x
-
-class FSEncoderClasification(nn.Module):
+"""
+    Clase FSEncoder, con la operacion invariante de fspool (Feature wise sort pool), pero adaptado
+    a la clasificacións
+"""
+class FSEncoder(nn.Module):
     def __init__(self, input_channels, output_channels, dim):
         super().__init__()
         for m in self.modules():
@@ -70,7 +76,9 @@ class FSEncoderClasification(nn.Module):
         x = self.lin(x)
         x = self.classifier(x)
         return x
-
+"""
+    Clase SumEncoder, con la operacion invariante suma
+"""
 class SumEncoder(nn.Module):
     def __init__(self, input_channels, output_channels, dim, **kwargs):
         super().__init__()
@@ -97,6 +105,25 @@ class SumEncoder(nn.Module):
         x = self.classifier(x)
         return x
 
+"""
+    Clase SumEncoder, con la operacion invariante suma, adaptado para clasificar
+"""
+class SumEncoderDSPN(nn.Module):
+    def __init__(self, input_channels, output_channels, dim, **kwargs):
+        super().__init__()
+        self.conv = nn.Sequential(
+            nn.Conv1d(input_channels, dim, 1),
+            nn.ReLU(inplace=True),
+            nn.Conv1d(dim, dim, 1),
+        )
+
+    def forward(self, x, n_points, *args):
+        x = self.conv(x)
+        x = x.sum(2)
+        return x
+"""
+    Clase MaxEncoder, con la operacion invariante Max
+"""
 class MaxEncoder(nn.Module):
     def __init__(self, input_channels, output_channels, dim, **kwargs):
         super().__init__()
@@ -122,7 +149,25 @@ class MaxEncoder(nn.Module):
         x = self.lin(x)
         x = self.classifier(x)
         return x
+"""
+    Clase MaxEncoder, con la operacion invariante Max, adaptado a la clasificación
+"""
+class MaxEncoderDSPN(nn.Module):
+    def __init__(self, input_channels, output_channels, dim, **kwargs):
+        super().__init__()
+        self.conv = nn.Sequential(
+            nn.Conv1d(input_channels, dim, 1),
+            nn.ReLU(inplace=True),
+            nn.Conv1d(dim, dim, 1),
+        )
 
+    def forward(self, x, n_points, *args):
+        x = self.conv(x)
+        x = x.max(2)[0]
+        return x
+"""
+    Clase MeanEncoderClasification, con la operacion invariante Mean, adaptado a la clasificación
+"""
 class MeanEncoder(nn.Module):
     def __init__(self, input_channels, output_channels, dim, **kwargs):
         super().__init__()
@@ -147,4 +192,20 @@ class MeanEncoder(nn.Module):
         x = x.sum(2) / n_points.size(1)
         x = self.lin(x)
         x = self.classifier(x)
+        return x
+"""
+    Clase MeanEncoder, con la operacion invariante Mean
+"""
+class MeanEncoderDSPN(nn.Module):
+    def __init__(self, input_channels, output_channels, dim, **kwargs):
+        super().__init__()
+        self.conv = nn.Sequential(
+            nn.Conv1d(input_channels, dim, 1),
+            nn.ReLU(inplace=True),
+            nn.Conv1d(dim, dim, 1),
+        )
+
+    def forward(self, x, n_points, *args):
+        x = self.conv(x)
+        x = x.sum(2) / n_points.size(1)
         return x
