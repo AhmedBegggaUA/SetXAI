@@ -112,12 +112,14 @@ class SumEncoderDSPN(nn.Module):
     def __init__(self, input_channels, output_channels, dim, **kwargs):
         super().__init__()
         self.conv = nn.Sequential(
-            nn.Conv1d(input_channels, dim, 1),
+            nn.Conv1d(input_channels + 1, dim, 1),
             nn.ReLU(inplace=True),
             nn.Conv1d(dim, dim, 1),
         )
 
-    def forward(self, x, n_points, *args):
+    def forward(self, x, mask, *args):
+        mask = mask.unsqueeze(1)
+        x = torch.cat([x, mask], dim=1)  # include mask as part of set
         x = self.conv(x)
         x = x.sum(2)
         return x
@@ -156,12 +158,14 @@ class MaxEncoderDSPN(nn.Module):
     def __init__(self, input_channels, output_channels, dim, **kwargs):
         super().__init__()
         self.conv = nn.Sequential(
-            nn.Conv1d(input_channels, dim, 1),
+            nn.Conv1d(input_channels+ 1, dim, 1),
             nn.ReLU(inplace=True),
             nn.Conv1d(dim, dim, 1),
         )
 
-    def forward(self, x, n_points, *args):
+    def forward(self, x, mask, *args):
+        mask = mask.unsqueeze(1)
+        x = torch.cat([x, mask], dim=1)  # include mask as part of set
         x = self.conv(x)
         x = x.max(2)[0]
         return x
@@ -200,12 +204,14 @@ class MeanEncoderDSPN(nn.Module):
     def __init__(self, input_channels, output_channels, dim, **kwargs):
         super().__init__()
         self.conv = nn.Sequential(
-            nn.Conv1d(input_channels, dim, 1),
+            nn.Conv1d(input_channels + 1, dim, 1),
             nn.ReLU(inplace=True),
             nn.Conv1d(dim, dim, 1),
         )
 
     def forward(self, x, n_points, *args):
+        mask = mask.unsqueeze(1)
+        x = torch.cat([x, mask], dim=1)  # include mask as part of set
         x = self.conv(x)
         x = x.sum(2) / n_points.size(1)
         return x

@@ -96,7 +96,7 @@ class ToTensor(object):
     def __call__(self, pointcloud):
         assert len(pointcloud.shape)==2
 
-        return torch.from_numpy(pointcloud)
+        return torch.from_numpy(pointcloud).type(torch.FloatTensor)
 def default_transforms():
     return transforms.Compose([
                                 PointSampler(2048),
@@ -108,7 +108,7 @@ def default_transforms():
 class PointCloudData(Dataset):
     def __init__(self, root_dir=None, Train=True, folder="train", transform=default_transforms()):
         if root_dir == None:
-            root_dir = Path("../data/10/raw")
+            root_dir = Path("./data/10/raw")
         #print(sys.path)
         self.root_dir = root_dir
         folders = [dir for dir in sorted(os.listdir(root_dir)) if os.path.isdir(root_dir/dir)]
@@ -139,5 +139,5 @@ class PointCloudData(Dataset):
         category = self.files[idx]['category']
         with open(pcd_path, 'r') as f:
             pointcloud = self.__preproc__(f)
-        mask = torch.ones(32,2048)
+        mask = torch.ones(2048).float()
         return self.classes[category],pointcloud.transpose(0,1),mask 

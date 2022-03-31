@@ -1,7 +1,5 @@
 from ast import arg
-from json import encoder
 import sys
-from xmlrpc.client import Boolean
 sys.path.insert(0, "/Users/ahmedbegga/Desktop/TFG-Ahmed/SetXAI")
 from operator import ne
 import torch
@@ -12,8 +10,7 @@ from tensorboardX import SummaryWriter
 from utils import chamfer_loss
 from fspool import FSPool
 from model import *
-from MnistSet import MNISTSet
-from MnistSet import get_loader
+from data.MnistSet import *
 from time import sleep
 from tqdm import tqdm
 from data.pointcloud_utils import *
@@ -84,8 +81,11 @@ def main():
     #MNIST
     if not args.eval_only :
         net.train()
-        net = net.double()
+        print(net)
+        #net = net.double()
         for epoch in range(n_epochs):
+            losses = []
+            accs = []
             with tqdm(train_loader, unit="batch") as tepoch:
                 for i, sample in enumerate(tepoch):
                     tepoch.set_description(f"Epoch {epoch}")
@@ -97,17 +97,22 @@ def main():
                     output = net(target_set,target_mask)
                     loss = F.cross_entropy(output, label)
                     acc = (output.max(dim=1)[1] == label).float().mean()
-                    writer.add_scalar("metric/loss", loss, global_step=i)
-                    writer.add_scalar("metric/acc", acc.item(), global_step=i)
+                    losses.append(loss.item())
+                    accs.append(acc.item())
                     loss.backward()
                     optimizer.step()
                     tepoch.set_postfix(loss=loss.item(), acc=100. * acc.item())
+                print('loss: {}, acc: {}'.format(round(sum(losses)/len(losses),2),round(sum(accs)/len(accs),2)))
+                writer.add_scalar("metric/loss", round(sum(losses)/len(losses),2), global_step=i)
+                writer.add_scalar("metric/acc",  round(sum(accs)/len(accs),2), global_step=i)
         writer.close()
         if args.store:
             nombre =  args.encoder + "_model_" +args.dataset + ".pth"
             torch.save(net.state_dict(),nombre)
     if not args.train_only:
         net.eval()
+        losses = []
+        accs = []
         with tqdm(test_loader, unit="batch") as tepoch:
             for i, sample in enumerate(tepoch):
                 tepoch.set_description(f"Test")
@@ -118,9 +123,10 @@ def main():
                 output = net(target_set,target_mask)
                 loss = F.cross_entropy(output, input)
                 acc = (output.max(dim=1)[1] == input).float().mean()
+                losses.append(loss.item())
+                accs.append(acc.item())
                 tepoch.set_postfix(loss=loss.item(), acc=100. * acc.item())
-
-
+        print('loss: {}, acc: {}'.format(round(sum(losses)/len(losses),2),round(sum(accs)/len(accs),2)))
 
 if __name__ == '__main__':    
     main()
