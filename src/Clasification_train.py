@@ -5,7 +5,6 @@ from operator import ne
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import argparse
 from tensorboardX import SummaryWriter
 from utils import chamfer_loss
 from fspool import FSPool
@@ -36,10 +35,10 @@ def main():
     )
     
     parser.add_argument(
-        "--latent", type=int, default=16, help="Dimensionality of latent space"
+        "--latent", type=int, default=None, help="Dimensionality of latent space"
     )
     parser.add_argument(
-        "--dim", type=int, default=32, help="Dimensionality of hidden layers"
+        "--dim", type=int, default=None, help="Dimensionality of hidden layers"
     )
     parser.add_argument(
         "--train-only", action="store_true", help="Only run training, no evaluation"
@@ -53,9 +52,16 @@ def main():
     if args.dataset == "mnist":
         set_channels = 2
         set_size = 342
+        hidden_dim = 32
+        latent_dim = 16
     else:
         set_channels = 3
         set_size = 2048
+        hidden_dim = 128
+        latent_dim = 64
+    if args.dim != None and args.latent != None:
+        hidden_dim = args.dim
+        latent_dim = args.latent
     batch_size = args.batchsize
     if args.dataset == "mnist":
         train_loader = get_loader(
@@ -69,19 +75,17 @@ def main():
         test_loader = DataLoader(test_data, batch_size=32)
     lr = args.lr
     n_epochs = args.epoch
-    hidden_dim = args.dim
-    latent_dim = args.latent
     set_encoder = globals()[args.encoder]
     net = set_encoder(set_channels,latent_dim,hidden_dim)
     ##CUDA
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print('Traning using ',device,' with ',args.encoder,'and dataset',args.dataset)
     net = net.to(device)
+    print(net)
     optimizer = torch.optim.Adam([p for p in net.parameters() if p.requires_grad], lr=0.001)
     #MNIST
     if not args.eval_only :
         net.train()
-        print(net)
         #net = net.double()
         for epoch in range(n_epochs):
             losses = []
@@ -97,14 +101,14 @@ def main():
                     output = net(target_set,target_mask)
                     loss = F.cross_entropy(output, label)
                     acc = (output.max(dim=1)[1] == label).float().mean()
+                    writer.add_scalar("metric/loss", loss, global_step=i)
+                    writer.add_scalar("metric/acc",  acc, global_step=i)
                     losses.append(loss.item())
                     accs.append(acc.item())
                     loss.backward()
                     optimizer.step()
                     tepoch.set_postfix(loss=loss.item(), acc=100. * acc.item())
                 print('loss: {}, acc: {}'.format(round(sum(losses)/len(losses),2),round(sum(accs)/len(accs),2)))
-                writer.add_scalar("metric/loss", round(sum(losses)/len(losses),2), global_step=i)
-                writer.add_scalar("metric/acc",  round(sum(accs)/len(accs),2), global_step=i)
         writer.close()
         if args.store:
             nombre =  args.encoder + "_model_" +args.dataset + ".pth"
@@ -127,6 +131,5 @@ def main():
                 accs.append(acc.item())
                 tepoch.set_postfix(loss=loss.item(), acc=100. * acc.item())
         print('loss: {}, acc: {}'.format(round(sum(losses)/len(losses),2),round(sum(accs)/len(accs),2)))
-
 if __name__ == '__main__':    
     main()
