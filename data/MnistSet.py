@@ -44,7 +44,7 @@ class MNISTSet(torch.utils.data.Dataset):
     """
     def __init__(self, threshold=0.0, train=True, root="mnist", full=False):
         self.train = train
-        self.root = root
+        self.root = './'
         self.threshold = threshold
         self.full = full
         #Common transformations in pytorch

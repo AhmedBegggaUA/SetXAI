@@ -96,19 +96,19 @@ class ToTensor(object):
     def __call__(self, pointcloud):
         assert len(pointcloud.shape)==2
 
-        return torch.from_numpy(pointcloud).type(torch.FloatTensor)
+        return torch.from_numpy(pointcloud)
 def default_transforms():
     return transforms.Compose([
                                 PointSampler(2048),
                                 Normalize(),
-                                RandRotation_z(),
-                                RandomNoise(),
+                                #RandRotation_z(),
+                                #RandomNoise(),
                                 ToTensor()
                               ])
 class PointCloudData(Dataset):
     def __init__(self, root_dir=None, Train=True, folder="train", transform=default_transforms()):
         if root_dir == None:
-            root_dir = Path("./data/10/raw")
+            root_dir = Path("../data/10/raw")
         #print(sys.path)
         self.root_dir = root_dir
         folders = [dir for dir in sorted(os.listdir(root_dir)) if os.path.isdir(root_dir/dir)]
@@ -124,6 +124,7 @@ class PointCloudData(Dataset):
                     sample['pcd_path'] = new_dir/file
                     sample['category'] = category
                     self.files.append(sample)
+        random.shuffle(self.files)
 
     def __len__(self):
         return len(self.files)
@@ -140,4 +141,6 @@ class PointCloudData(Dataset):
         with open(pcd_path, 'r') as f:
             pointcloud = self.__preproc__(f)
         mask = torch.ones(2048).float()
-        return self.classes[category],pointcloud.transpose(0,1),mask 
+        return {'pointcloud': pointcloud.transpose(0,1).float(), 
+                'category': self.classes[category],
+                'mask':mask}

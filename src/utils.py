@@ -1,7 +1,10 @@
 import torch
 import torch.nn.functional as F
 import scipy.optimize
-
+import seaborn as sn
+import matplotlib
+import matplotlib.pyplot as plt
+import numpy as np
 def per_sample_hungarian_loss(sample_np):
     row_idx, col_idx = scipy.optimize.linear_sum_assignment(sample_np)
     return row_idx, col_idx
@@ -33,3 +36,17 @@ def outer(a, b=None):
     a = a.unsqueeze(dim=-1).expand(*size_a)
     b = b.unsqueeze(dim=-2).expand(*size_b)
     return a, b
+def get_weight(modelo):
+    fig, ax = plt.subplots(2, 3, figsize=(20,10))
+    j = 1
+    for i ,w in enumerate(modelo.named_parameters()):
+        if i % 2 == 0 and i <= 10: 
+            plt.subplot(2,3,j) 
+            plt.title(w[0])
+            if w[1].size(-1) == 1:
+                data = w[1].squeeze(2).detach().numpy()
+            sn.heatmap(data, annot=False, fmt='g')
+            j+=1
+            if i == 10:
+                break
+    plt.show()

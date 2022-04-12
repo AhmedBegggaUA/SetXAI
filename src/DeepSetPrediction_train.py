@@ -140,8 +140,20 @@ def main():
                 set = torch.cat([set, target_mask.unsqueeze(dim=1)], dim=1)
                 progress = [torch.cat([p, m.unsqueeze(dim=1)], dim=1)
                                 for p, m in zip(progress, masks)]
-                
-                set_loss = chamfer_loss(torch.stack(progress), set.unsqueeze(0))
+                if args.loss == 'chamfer':
+                    set_loss = chamfer_loss(torch.stack(progress), set.unsqueeze(0))
+                else:
+                    # dim 0 is over the inner iteration steps
+                    # target set is broadcasted over dim 0
+                    a = torch.stack(progress)
+                    # target set is explicitly broadcasted over dim 0
+                    b = set.repeat(a.size(0), 1, 1, 1)
+                    # flatten inner iteration dim and batch dim
+                    a = a.view(-1, a.size(2), a.size(3))
+                    b = b.view(-1, b.size(2), b.size(3))
+                    set_loss = hungarian_loss(
+                    progress[-1], set
+                    ).unsqueeze(0)
                 loss = set_loss.mean()
                 progress = progress_only
                 optimizer.zero_grad()
@@ -167,7 +179,18 @@ def main():
             set = torch.cat([set, target_mask.unsqueeze(dim=1)], dim=1)
             progress = [torch.cat([p, m.unsqueeze(dim=1)], dim=1)
                             for p, m in zip(progress, masks)]
-            set_loss = chamfer_loss(torch.stack(progress), set.unsqueeze(0))
+            if args.loss == 'chamfer':
+                    set_loss = chamfer_loss(torch.stack(progress), set.unsqueeze(0))
+            else:
+                # dim 0 is over the inner iteration steps
+                # target set is broadcasted over dim 0
+                a = torch.stack(progress)
+                # target set is explicitly broadcasted over dim 0
+                b = set.repeat(a.size(0), 1, 1, 1)
+                # flatten inner iteration dim and batch dim
+                a = a.view(-1, a.size(2), a.size(3))
+                b = b.view(-1, b.size(2), b.size(3))
+                set_loss = hungarian_loss(progress[-1], set).unsqueeze(0)
             loss = set_loss.mean()
             progress = progress_only
             tepoch.set_postfix(loss=loss.item())

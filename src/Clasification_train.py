@@ -12,6 +12,7 @@ from model import *
 from data.MnistSet import *
 from time import sleep
 from tqdm import tqdm
+import argparse
 from data.pointcloud_utils import *
 from data.Modelnet10toSet import *
 def main():
@@ -48,7 +49,7 @@ def main():
     )
     parser.add_argument("--store", action="store_true", help="")
     args = parser.parse_args()
-    writer = SummaryWriter(f"runs/{args.encoder}", purge_step=0)
+    writer = SummaryWriter(f"runs/{args.encoder + '_' + args.dataset}", purge_step=0)
     if args.dataset == "mnist":
         set_channels = 2
         set_size = 342
@@ -71,8 +72,8 @@ def main():
     elif args.dataset == "modelnet10":
         train_data = PointCloudData()
         test_data = PointCloudData(None, Train=False, folder='test', transform=None)
-        train_loader = DataLoader(train_data, batch_size=32)
-        test_loader = DataLoader(test_data, batch_size=32)
+        train_loader = DataLoader(train_data, batch_size=32,shuffle=True)
+        test_loader = DataLoader(test_data, batch_size=32,shuffle=True)
     lr = args.lr
     n_epochs = args.epoch
     set_encoder = globals()[args.encoder]
@@ -93,14 +94,18 @@ def main():
             with tqdm(train_loader, unit="batch") as tepoch:
                 for i, sample in enumerate(tepoch):
                     tepoch.set_description(f"Epoch {epoch}")
-                    if(device == 'gpu'):
+                    if device == 'gpu' and args.dataset == 'mnist':
                         label, target_set, target_mask = map(lambda x: x.cuda(), sample)
-                    else:
+                    elif args.dataset == 'mnist':
                         label, target_set, target_mask = map(lambda x: x, sample)
+                    else:
+                        label = sample['category']
+                        target_set = sample['pointcloud']
+                        target_mask = sample['mask']
                     optimizer.zero_grad()
-                    output = net(target_set,target_mask)
-                    loss = F.cross_entropy(output, label)
-                    acc = (output.max(dim=1)[1] == label).float().mean()
+                    output = net(target_set.to(device),target_mask.to(device))
+                    loss = F.cross_entropy(output.to(device), label.to(device))
+                    acc = (output.max(dim=1)[1].to(device) == label.to(device)).float().mean()
                     writer.add_scalar("metric/loss", loss, global_step=i)
                     writer.add_scalar("metric/acc",  acc, global_step=i)
                     losses.append(loss.item())
@@ -124,9 +129,9 @@ def main():
                         input, target_set, target_mask = map(lambda x: x.cuda(), sample)
                 else:
                     input, target_set, target_mask = map(lambda x: x, sample)
-                output = net(target_set,target_mask)
-                loss = F.cross_entropy(output, input)
-                acc = (output.max(dim=1)[1] == input).float().mean()
+                output = net(target_set.to(device),target_mask.to(device))
+                loss = F.cross_entropy(output.to(device), input.to(device))
+                acc = (output.max(dim=1)[1].to(device) == input.to(device)).float().mean()
                 losses.append(loss.item())
                 accs.append(acc.item())
                 tepoch.set_postfix(loss=loss.item(), acc=100. * acc.item())
