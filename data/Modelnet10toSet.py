@@ -101,8 +101,8 @@ def default_transforms():
     return transforms.Compose([
                                 PointSampler(2048),
                                 Normalize(),
-                                #RandRotation_z(),
-                                #RandomNoise(),
+                                RandRotation_z(),
+                                RandomNoise(),
                                 ToTensor()
                               ])
 class PointCloudData(Dataset):

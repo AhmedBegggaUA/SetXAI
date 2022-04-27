@@ -130,3 +130,5 @@ dmypy.json
 # Pyre type checker
 .pyre/
 .DS_Store
+mnist_False_0.0.pth
+mnist_True_0.0.pth
