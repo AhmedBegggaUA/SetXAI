@@ -71,5 +71,23 @@ def pcshow(xs,ys,zs,c=None):
                       color=c)),
                       selector=dict(mode='markers'))
     fig.show()
+def pcshow_crit(xs,ys,zs,xc,yc,zc,cc=None,c=None):
+    if c is None:
+        c = 'navy'
+    data=[go.Scatter3d(x=xs, y=ys, z=zs,
+                                   mode='markers')]
+    fig = visualize_rotate(data)
+    fig.update_traces(marker=dict(size=2,
+                      line=dict(width=1,
+                      color=c)),
+                      selector=dict(mode='markers'))
+    data2=[go.Scatter3d(x=xc, y=yc, z=zc,
+                                   mode='markers')]
+    fig = visualize_rotate(data2)
+    fig.update_traces(marker=dict(size=2,
+                      line=dict(width=1,
+                      color='crimson')),
+                      selector=dict(mode='markers'))
+    fig.show()
 
 
