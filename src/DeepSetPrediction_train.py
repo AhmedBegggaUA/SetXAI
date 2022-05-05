@@ -130,10 +130,14 @@ def main():
         with tqdm(train_loader, unit="batch") as tepoch:
             for i, sample in enumerate(tepoch):
                 tepoch.set_description(f"Epoch {epoch}")
-                if(device == 'gpu'):
+                if(device == 'gpu' and args.dataset == "mnist"):
                     label, set, target_mask = map(lambda x: x.cuda(), sample)
-                else:
+                elif args.dataset == "mnist":
                     label, set, target_mask = map(lambda x: x, sample)
+                else:
+                    label = sample['category']
+                    set = sample['pointcloud']
+                    target_mask = sample['mask']
                 (progress, masks, evals, gradn), (y_enc, y_label) = net(label, set, target_mask)
                 
                 progress_only = progress

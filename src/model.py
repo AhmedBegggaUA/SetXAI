@@ -145,7 +145,7 @@ class MaxEncoder(nn.Module):
             nn.Linear(output_channels, 10),
         )
 
-    def forward(self, x, n_points, *args):
+    def forward(self, x, n_points=None, *args):
         x = self.conv(x)
         x = x.max(2)[0]
         x = self.lin(x)
@@ -162,11 +162,12 @@ class MaxEncoderDSPN(nn.Module):
             nn.ReLU(inplace=True),
             nn.Conv1d(dim, dim, 1),
         )
-
+        self.salidaConv = torch.zeros(1,1)
     def forward(self, x, mask, *args):
         mask = mask.unsqueeze(1)
         x = torch.cat([x, mask], dim=1)  # include mask as part of set
         x = self.conv(x)
+        self.salidaConv = x
         x = x.max(2)[0]
         return x
 """
