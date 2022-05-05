@@ -126,6 +126,8 @@ def main():
     print('Traning using ',device,' with ',args.encoder,'and dataset',args.dataset)
     net.train()
     print(net)
+    losses = []
+    accs = []
     for epoch in range(n_epochs):
         with tqdm(train_loader, unit="batch") as tepoch:
             for i, sample in enumerate(tepoch):
@@ -159,11 +161,14 @@ def main():
                     progress[-1], set
                     ).unsqueeze(0)
                 loss = set_loss.mean()
+                losses.append(loss.item())
+                #accs.append(acc.item())
                 progress = progress_only
                 optimizer.zero_grad()
                 loss.backward()
                 optimizer.step()
                 tepoch.set_postfix(loss=loss.item())
+            print('loss: {}'.format(round(sum(losses)/len(losses),2)))
     if args.store:
             nombre =  args.encoder + "_model_" +args.dataset + ".pth"
             torch.save(net.state_dict(),nombre)
@@ -174,11 +179,16 @@ def main():
     with tqdm(test_loader, unit="batch") as tepoch:
         for i, sample in enumerate(tepoch):
             tepoch.set_description(f"Test")
-            if(device == 'gpu'):
+            if(device == 'gpu' and args.dataset == "mnist"):
                     label, set, target_mask = map(lambda x: x.cuda(), sample)
-            else:
+            elif args.dataset == "mnist":
                 label, set, target_mask = map(lambda x: x, sample)
+            else:
+                label = sample['category']
+                set = sample['pointcloud']
+                target_mask = sample['mask']
             (progress, masks, evals, gradn), (y_enc, y_label) = net(label, set, target_mask)
+                
             progress_only = progress
             set = torch.cat([set, target_mask.unsqueeze(dim=1)], dim=1)
             progress = [torch.cat([p, m.unsqueeze(dim=1)], dim=1)
@@ -199,6 +209,6 @@ def main():
             progress = progress_only
             tepoch.set_postfix(loss=loss.item())
             losses.append(loss.item())
-    print('loss: {}, acc: {}'.format(round(sum(losses)/len(losses),2),round(sum(accs)/len(accs),2)))
+    print('loss: {}'.format(round(sum(losses)/len(losses),2)))
 if __name__ == '__main__':    
     main()
