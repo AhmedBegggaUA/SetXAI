@@ -216,3 +216,20 @@ class MeanEncoderDSPN(nn.Module):
         x = self.conv(x)
         x = x.sum(2) / n_points.size(1)
         return x
+'''
+    Clase MLPEncoder, la red neuronal básica
+'''
+class MLPEncoder(nn.Module):
+    def __init__(self, *, input_channels, output_channels, dim, set_size, **kwargs):
+        super().__init__()
+        self.model = nn.Sequential(
+            nn.Linear(input_channels * set_size, dim),
+            nn.ReLU(inplace=True),
+            nn.Linear(dim, dim),
+            nn.ReLU(inplace=True),
+            nn.Linear(dim, output_channels),
+        )
+
+    def forward(self, x, *args):
+        x = x.view(x.size(0), -1)
+        return self.model(x)
