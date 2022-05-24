@@ -57,7 +57,7 @@ def main():
         latent_dim = 16
     else:
         set_channels = 3
-        set_size = 2048
+        set_size = 1024
         hidden_dim = 128
         latent_dim = 64
     if args.dim != None and args.latent != None:
