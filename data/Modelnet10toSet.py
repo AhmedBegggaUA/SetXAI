@@ -99,7 +99,7 @@ class ToTensor(object):
         return torch.from_numpy(pointcloud)
 def default_transforms():
     return transforms.Compose([
-                                PointSampler(1024),
+                                PointSampler(2048),
                                 Normalize(),
                                 RandRotation_z(),
                                 RandomNoise(),
@@ -140,7 +140,7 @@ class PointCloudData(Dataset):
         category = self.files[idx]['category']
         with open(pcd_path, 'r') as f:
             pointcloud = self.__preproc__(f)
-        mask = torch.ones(1024).float()
+        mask = torch.ones(2048).float()
         return {'pointcloud': pointcloud.transpose(0,1).float(), 
                 'category': self.classes[category],
                 'mask':mask}

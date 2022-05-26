@@ -27,7 +27,7 @@ class FSEncoderDSPN(nn.Module):
             nn.ReLU(),
             nn.Conv1d(dim, output_channels, 1),
         )
-        
+        self.salidaConv = torch.zeros(1,1)
         self.pool = FSPool(output_channels, 20, relaxed=False)
 
     def forward(self, x, mask=None):
@@ -35,6 +35,7 @@ class FSEncoderDSPN(nn.Module):
         x = torch.cat([x, mask], dim=1)  # include mask as part of set
         x = self.conv(x)
         x = x / x.size(2)  # normalise so that activations aren't too high with big sets
+        self.salidaConv = x
         x, _ = self.pool(x)
         return x
 """
@@ -68,7 +69,7 @@ class FSEncoder(nn.Module):
             nn.ReLU(),
             nn.Linear(output_channels, 10),
         )
-        self.pool = FSPool(dim, 20, relaxed=True)
+        self.pool = FSPool(dim, 20, relaxed=False)
 
     def forward(self, x, mask=None):
         x = self.conv(x)
@@ -116,11 +117,12 @@ class SumEncoderDSPN(nn.Module):
             nn.ReLU(inplace=True),
             nn.Conv1d(dim, dim, 1),
         )
-
+        self.salidaConv = torch.zeros(1,1)
     def forward(self, x, mask, *args):
         mask = mask.unsqueeze(1)
         x = torch.cat([x, mask], dim=1)  # include mask as part of set
         x = self.conv(x)
+        self.salidaConv = x
         x = x.sum(2)
         return x
 """
@@ -233,3 +235,8 @@ class MLPEncoder(nn.Module):
     def forward(self, x, *args):
         x = x.view(x.size(0), -1)
         return self.model(x)
+
+
+
+
+
