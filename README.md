@@ -1,4 +1,4 @@
-<img width="800" alt="image" src="https://user-images.githubusercontent.com/60975511/170879500-dd060150-5ea2-47b2-aa17-d1fbf3cd4366.png">
+<img width="600" alt="image" src="https://user-images.githubusercontent.com/60975511/170879500-dd060150-5ea2-47b2-aa17-d1fbf3cd4366.png">
 # SetXAI
 Este trabajo nace del reto que supone enfrentarse a las  redes neuronales invariantes a permutación y tamaño de entrada, que hasta la fecha es algo novedoso y poco explorado debido a su complejidad computacional. Sin embargo, estas redes neuronales son muy expresivas y hacen que sea posible trabajar a nivel de conjuntos (p.e. nubes de puntos 2D y 3D, tramas de vídeo, grafos, etc).
 
