@@ -16,11 +16,18 @@ conda activate tfg
 ```
 ## Organización del repositorio
 Documentación : Documentos esenciales para la teoría de Deep Set
+
 Tutoriales : Recopilación de tutoriales para el entendimiento de los DeepSet, además de los puntos críticos
-data : Directorio que contiene los datos, para poder hacer uso de ModelNet10, se ha de descargar el fichero http://3dvision.princeton.edu/projects/2014/3DShapeNets/ModelNet10.zip
+
+data : Directorio que contiene los datos, para poder hacer uso de ModelNet10, se ha de descargar el fichero 
+http://3dvision.princeton.edu/projects/2014/3DShapeNets/ModelNet10.zip
+
 runs : Directorio que contiene los logs de los experimentos
+
 scripts : Directorio que contiene los modelos entrenados, además de los scripts del servidor
+
 src : Directorio con todo el código fuente de los DeepSet
+
 visualisation : Directorio con notebooks para previsualizar los datasets usados
    
 ## Ejecutar experimentos
