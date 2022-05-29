@@ -1,5 +1,5 @@
 import sys
-sys.path.insert(0, '/Users/ahmedbegga/Desktop/TFG-Ahmed/SetXAI')
+sys.path.insert(0, '../')
 import torch
 import torch.nn as nn
 import torch.nn.functional as F

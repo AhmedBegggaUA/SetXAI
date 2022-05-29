@@ -1,6 +1,6 @@
 from ast import arg
 import sys
-sys.path.insert(0, "/Users/ahmedbegga/Desktop/TFG-Ahmed/SetXAI")
+sys.path.insert(0, "../")
 from operator import ne
 import torch
 import torch.nn as nn

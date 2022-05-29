@@ -1,0 +1,84 @@
+Traning using  cpu  with  MaxEncoder and dataset modelnet10
+MaxEncoder(
+  (conv): Sequential(
+    (0): Conv1d(3, 128, kernel_size=(1,), stride=(1,))
+    (1): ReLU(inplace=True)
+    (2): Conv1d(128, 128, kernel_size=(1,), stride=(1,))
+  )
+  (lin): Sequential(
+    (0): Linear(in_features=128, out_features=128, bias=True)
+    (1): ReLU(inplace=True)
+    (2): Linear(in_features=128, out_features=64, bias=True)
+  )
+  (classifier): Sequential(
+    (0): Linear(in_features=64, out_features=64, bias=True)
+    (1): ReLU()
+    (2): Linear(in_features=64, out_features=10, bias=True)
+  )
+)
+Epoch  0 : loss: 1.88, acc: 0.31
+Epoch  1 : loss: 1.25, acc: 0.51
+Epoch  2 : loss: 1.11, acc: 0.58
+Epoch  3 : loss: 0.99, acc: 0.62
+Epoch  4 : loss: 0.84, acc: 0.68
+Epoch  5 : loss: 0.75, acc: 0.72
+Epoch  6 : loss: 0.7, acc: 0.75
+Epoch  7 : loss: 0.62, acc: 0.78
+Epoch  8 : loss: 0.57, acc: 0.79
+Epoch  9 : loss: 0.55, acc: 0.8
+TEST: loss: 0.65, acc: 0.769
+Epoch  0 : loss: 1.82, acc: 0.35
+Epoch  1 : loss: 1.34, acc: 0.48
+Epoch  2 : loss: 1.1, acc: 0.58
+Epoch  3 : loss: 0.92, acc: 0.65
+Epoch  4 : loss: 0.81, acc: 0.69
+Epoch  5 : loss: 0.68, acc: 0.75
+Epoch  6 : loss: 0.58, acc: 0.79
+Epoch  7 : loss: 0.5, acc: 0.82
+Epoch  8 : loss: 0.51, acc: 0.82
+Epoch  9 : loss: 0.47, acc: 0.83
+TEST: loss: 0.61, acc: 0.776
+Epoch  0 : loss: 1.84, acc: 0.33
+Epoch  1 : loss: 1.23, acc: 0.53
+Epoch  2 : loss: 1.08, acc: 0.58
+Epoch  3 : loss: 0.97, acc: 0.62
+Epoch  4 : loss: 0.89, acc: 0.66
+Epoch  5 : loss: 0.76, acc: 0.72
+Epoch  6 : loss: 0.7, acc: 0.74
+Epoch  7 : loss: 0.62, acc: 0.77
+Epoch  8 : loss: 0.57, acc: 0.79
+Epoch  9 : loss: 0.53, acc: 0.81
+TEST: loss: 0.73, acc: 0.732
+Epoch  0 : loss: 1.87, acc: 0.34
+Epoch  1 : loss: 1.28, acc: 0.5
+Epoch  2 : loss: 1.05, acc: 0.61
+Epoch  3 : loss: 0.92, acc: 0.66
+Epoch  4 : loss: 0.76, acc: 0.72
+Epoch  5 : loss: 0.64, acc: 0.77
+Epoch  6 : loss: 0.57, acc: 0.79
+Epoch  7 : loss: 0.53, acc: 0.81
+Epoch  8 : loss: 0.49, acc: 0.82
+Epoch  9 : loss: 0.49, acc: 0.82
+TEST: loss: 0.71, acc: 0.765
+Epoch  0 : loss: 1.85, acc: 0.33
+Epoch  1 : loss: 1.29, acc: 0.5
+Epoch  2 : loss: 1.06, acc: 0.6
+Epoch  3 : loss: 0.9, acc: 0.66
+Epoch  4 : loss: 0.78, acc: 0.7
+Epoch  5 : loss: 0.7, acc: 0.74
+Epoch  6 : loss: 0.64, acc: 0.76
+Epoch  7 : loss: 0.58, acc: 0.79
+Epoch  8 : loss: 0.57, acc: 0.79
+Epoch  9 : loss: 0.51, acc: 0.82
+TEST: loss: 0.69, acc: 0.745
+Epoch  0 : loss: 1.8, acc: 0.34
+Epoch  1 : loss: 1.31, acc: 0.47
+Epoch  2 : loss: 1.1, acc: 0.58
+Epoch  3 : loss: 0.99, acc: 0.62
+Epoch  4 : loss: 0.88, acc: 0.67
+Epoch  5 : loss: 0.78, acc: 0.7
+Epoch  6 : loss: 0.72, acc: 0.74
+Epoch  7 : loss: 0.65, acc: 0.76
+Epoch  8 : loss: 0.6, acc: 0.78
+Epoch  9 : loss: 0.54, acc: 0.8
+TEST: loss: 0.96, acc: 0.665

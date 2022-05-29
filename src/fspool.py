@@ -26,8 +26,6 @@ class FSPool(nn.Module):
         self.relaxed = relaxed
         #Llamamos a la función para inicializar los pesos de weight
         self.reset_parameters()
-        self.ahmed = 0
-        self.truco = 0
     def reset_parameters(self):
         nn.init.normal_(self.weight)
 
@@ -67,7 +65,6 @@ class FSPool(nn.Module):
         else:
             x, perm = x.sort(dim=2, descending=True)
 
-        self.ahmed = (x * weight * mask.float())
         x = (x * weight * mask.float()).sum(dim=2)
         return x, perm
 
