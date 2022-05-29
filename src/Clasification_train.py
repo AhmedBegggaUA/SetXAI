@@ -1,4 +1,5 @@
 from ast import arg
+import pwd
 import sys
 sys.path.insert(0, "../")
 from operator import ne
@@ -7,8 +8,8 @@ import torch.nn as nn
 import torch.nn.functional as F
 from tensorboardX import SummaryWriter
 from utils import chamfer_loss
-from fspool import FSPool
-from model import *
+from src.fspool import FSPool
+from src.model import *
 from data.MnistSet import *
 from time import sleep
 from tqdm import tqdm

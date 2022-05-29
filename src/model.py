@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from src.fspool import FSPool
+from fspool import FSPool
 ############
 # Encoders #
 ############
