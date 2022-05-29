@@ -20,3 +20,7 @@ conda activate tfg
 
 ## Ejecutar experimentos
 
+## Visualizar experimentos con TensorBoard
+```
+tensorboard --logdir runs
+```
