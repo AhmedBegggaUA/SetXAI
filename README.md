@@ -7,3 +7,14 @@ Nuestra labor en este proyecto será la aportación de un framework que nos perm
     
 ![Overview of set optimisation on the example of CLEVR bounding box prediction](animation_deep_set.gif)
 
+## Dependencias
+
+Creación de un entorno con los paquetes necesarios.
+```
+conda env create -f tfg.yml
+conda activate tfg
+```
+## Code organization
+
+
+## Run experiments
